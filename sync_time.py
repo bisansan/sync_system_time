@@ -8,11 +8,14 @@ import demjson3
 
 # 全局禁用http请求ssl验证
 ssl._create_default_https_context = ssl._create_unverified_context
+
+# 使用的是苏宁的api
 time_url = "https://quan.suning.com/getSysTime.do"
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36 Edg/98.0.1108.62"
 }
 
+# 将数字转成字符串再补位
 def int_to_str_zfill2(int:int):
     return str(int).zfill(2)
 
@@ -21,23 +24,21 @@ try:
     time_response = urllib.request.urlopen(req)
     net_time_json = demjson3.decode(time_response.read().decode("utf-8"))
 
+    # 获取本地时区时差 
     time_offset = time.timezone if (time.localtime().tm_isdst == 0) else time.altzone
     offset_hour = int(time_offset / 60 / 60 * -1)
 
+    # 获取utc时间
     utc_time = datetime.datetime.strptime(net_time_json['sysTime2'], '%Y-%m-%d %H:%M:%S')
 
     tz = datetime.timezone(datetime.timedelta(hours=offset_hour))
 
     obj_tz_time = utc_time.astimezone(tz)
-    # print(utc_time.astimezone(tz).hour,utc_time.astimezone(tz).minute, utc_time.astimezone(tz).second)
-    # print(int(time.mktime(time.strptime(net_time_json['sysTime2'], '%Y-%m-%d %H:%M:%S'))))
 
     # windows
     if platform.system() == "Windows":
         # date 2021/09/21
         # time 12:12:12
-        # pass
-        # print("date %s/%s/%s"  % (utc_time.astimezone(tz).year,utc_time.astimezone(tz).month,utc_time.astimezone(tz).day))
         os.system("date %s/%s/%s" % (obj_tz_time.year, int_to_str_zfill2(obj_tz_time.month), int_to_str_zfill2(obj_tz_time.day)))
         os.system("time %s:%s:%s" % (int_to_str_zfill2(obj_tz_time.hour), int_to_str_zfill2(obj_tz_time.minute), int_to_str_zfill2(obj_tz_time.second))) 
 
