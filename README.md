@@ -13,6 +13,6 @@ This script must be run with administrator privileges
 generate executable file generate executable file
 
 ```
-pyinstaller -F -i aor64-7s6ss-004.ico sync_time.py -w -c
+pyinstaller -F -i icon.ico sync_time.py -w -c
 ```
 
