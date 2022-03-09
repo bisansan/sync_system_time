@@ -28,12 +28,14 @@ try:
     time_offset = time.timezone if (time.localtime().tm_isdst == 0) else time.altzone
     offset_hour = int(time_offset / 60 / 60 * -1)
 
-    # 获取utc时间
-    utc_time = datetime.datetime.strptime(net_time_json['sysTime2'], '%Y-%m-%d %H:%M:%S')
+    # 获取北京网络时间
+    net_time = datetime.datetime.strptime(net_time_json['sysTime2'], '%Y-%m-%d %H:%M:%S')
 
-    tz = datetime.timezone(datetime.timedelta(hours=offset_hour))
+    # 获取UTC时间
+    utc_time = net_time - datetime.timedelta(hours=8)
 
-    obj_tz_time = utc_time.astimezone(tz)
+    # 使用UTC时间根据本地时区来获取最终的时间
+    obj_tz_time = utc_time + datetime.timedelta(hours=offset_hour)
 
     # windows
     if platform.system() == "Windows":
